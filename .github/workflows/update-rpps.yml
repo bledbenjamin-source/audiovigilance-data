@@ -1,11 +1,13 @@
 name: Mise à jour base RPPS
 
 on:
-  # Lancement automatique le 1er de chaque mois à 3h du matin
   schedule:
     - cron: '0 3 1 * *'
-  # Lancement manuel depuis l'interface GitHub
   workflow_dispatch:
+
+# ← Ajouter ces permissions
+permissions:
+  contents: write
 
 jobs:
   update-rpps:
