@@ -1,0 +1,38 @@
+name: Mise à jour base RPPS
+
+on:
+  # Lancement automatique le 1er de chaque mois à 3h du matin
+  schedule:
+    - cron: '0 3 1 * *'
+  # Lancement manuel depuis l'interface GitHub
+  workflow_dispatch:
+
+jobs:
+  update-rpps:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout du repo
+        uses: actions/checkout@v4
+
+      - name: Installer Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Installer les dépendances
+        run: pip install pandas pyarrow requests
+
+      - name: Télécharger et filtrer le Parquet RPPS
+        run: python update_rpps.py
+
+      - name: Créer la Release GitHub avec le nouveau Parquet
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: rpps-${{ github.run_number }}
+          name: "Base RPPS — ${{ github.run_number }}"
+          body: "Mise à jour automatique de la base RPPS audioprothésistes"
+          files: audio_pro_clean.parquet
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
